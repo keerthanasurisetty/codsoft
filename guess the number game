@@ -1,0 +1,50 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class GuessTheNumberGame {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+
+        System.out.println("Welcome to the Guess the Number Game!");
+
+        int roundsWon = 0; 
+
+        while (true) {
+            int lowerBound = 1;
+            int upperBound = 100;
+            int secretNumber = random.nextInt(upperBound - lowerBound + 1) + lowerBound;
+            int attempts = 0;
+
+            int maxAttempts = 7;  
+
+            while (attempts < maxAttempts) {
+                System.out.print("Guess the number between " + lowerBound + " and " + upperBound + ": ");
+                int userGuess = scanner.nextInt();
+                attempts++;
+
+                if (userGuess == secretNumber) {
+                    System.out.println("Congratulations! You guessed the number " + secretNumber + " in " + attempts + " attempts.");
+                    roundsWon++;
+                    break;
+                } else if (userGuess < secretNumber) {
+                    System.out.println("Try a higher number.");
+                } else {
+                    System.out.println("Try a lower number.");
+                }
+            }
+
+            if (attempts == maxAttempts) {
+                System.out.println("\nSorry, you've run out of attempts. The correct answer was:" + secretNumber);
+            }
+
+            System.out.print("\nDo you want to play again? (yes/no): ");
+            String playAgain = scanner.next();
+            if (!playAgain.equalsIgnoreCase("yes")) {
+                break;
+            }
+        }
+
+        System.out.println("Game over! You won " + roundsWon + " round(s).");
+    }
+}
