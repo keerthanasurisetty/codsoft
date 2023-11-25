@@ -1,0 +1,190 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Student {
+    private String name;
+    private int rollNumber;
+    private String grade;
+
+    public Student(String name, int rollNumber, String grade) {
+        this.name = name;
+        this.rollNumber = rollNumber;
+        this.grade = grade;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getRollNumber() {
+        return rollNumber;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Name: %s\nRoll Number: %d\nGrade: %s", name, rollNumber, grade);
+    }
+}
+
+class StudentManagementSystem {
+    private List<Student> students;
+
+    public StudentManagementSystem() {
+        this.students = new ArrayList<>();
+    }
+
+    public void addStudent(Student student) {
+        students.add(student);
+    }
+
+    public void removeStudent(int rollNumber) {
+        students.removeIf(student -> student.getRollNumber() == rollNumber);
+    }
+
+    public Student searchStudent(int rollNumber) {
+        for (Student student : students) {
+            if (student.getRollNumber() == rollNumber) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    public List<Student> getAllStudents() {
+        return students;
+    }
+
+    public void displayAllStudents() {
+        for (Student student : students) {
+            System.out.println(student);
+            System.out.println("------------------------------");
+        }
+    }
+
+    public void writeStudentDataToFile(String fileName) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(students);
+            System.out.println("Student data written to file successfully.");
+        } catch (IOException e) {
+            System.out.println("Error writing student data to file: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void readStudentDataFromFile(String fileName) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            students = (List<Student>) ois.readObject();
+            System.out.println("Student data read from file successfully.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error reading student data from file: " + e.getMessage());
+        }
+    }
+}
+
+public class StudentManagementSystemApp {
+    public static void main(String[] args) {
+        StudentManagementSystem studentManagementSystem = new StudentManagementSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nStudent Management System Menu:");
+            System.out.println("1. Add a new student");
+            System.out.println("2. Remove a student");
+            System.out.println("3. Search for a student");
+            System.out.println("4. Display all students");
+            System.out.println("5. Save student data to file");
+            System.out.println("6. Load student data from file");
+            System.out.println("7. Exit");
+
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addStudent(studentManagementSystem, scanner);
+                    break;
+                case 2:
+                    removeStudent(studentManagementSystem, scanner);
+                    break;
+                case 3:
+                    searchStudent(studentManagementSystem, scanner);
+                    break;
+                case 4:
+                    displayAllStudents(studentManagementSystem);
+                    break;
+                case 5:
+                    saveStudentDataToFile(studentManagementSystem, scanner);
+                    break;
+                case 6:
+                    loadStudentDataFromFile(studentManagementSystem, scanner);
+                    break;
+                case 7:
+                    System.out.println("Exiting the Student Management System. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
+            }
+        }
+    }
+
+    private static void addStudent(StudentManagementSystem studentManagementSystem, Scanner scanner) {
+        System.out.print("Enter student name: ");
+        String name = scanner.next();
+        System.out.print("Enter student roll number: ");
+        int rollNumber = scanner.nextInt();
+        System.out.print("Enter student grade: ");
+        String grade = scanner.next();
+
+        Student newStudent = new Student(name, rollNumber, grade);
+        studentManagementSystem.addStudent(newStudent);
+
+        System.out.println("Student added successfully.");
+    }
+
+    private static void removeStudent(StudentManagementSystem studentManagementSystem, Scanner scanner) {
+        System.out.print("Enter student roll number to remove: ");
+        int rollNumber = scanner.nextInt();
+
+        studentManagementSystem.removeStudent(rollNumber);
+
+        System.out.println("Student removed successfully.");
+    }
+
+    private static void searchStudent(StudentManagementSystem studentManagementSystem, Scanner scanner) {
+        System.out.print("Enter student roll number to search: ");
+        int rollNumber = scanner.nextInt();
+
+        Student foundStudent = studentManagementSystem.searchStudent(rollNumber);
+
+        if (foundStudent != null) {
+            System.out.println("Student found:\n" + foundStudent);
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    private static void displayAllStudents(StudentManagementSystem studentManagementSystem) {
+        System.out.println("\nAll Students:");
+        studentManagementSystem.displayAllStudents();
+    }
+
+    private static void saveStudentDataToFile(StudentManagementSystem studentManagementSystem, Scanner scanner) {
+        System.out.print("Enter file name to save student data: ");
+        String fileName = scanner.next();
+
+        studentManagementSystem.writeStudentDataToFile(fileName);
+    }
+
+    private static void loadStudentDataFromFile(StudentManagementSystem studentManagementSystem, Scanner scanner) {
+        System.out.print("Enter file name to load student data: ");
+        String fileName = scanner.next();
+
+        studentManagementSystem.readStudentDataFromFile(fileName);
+    }
+}
